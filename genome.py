@@ -1,3 +1,7 @@
+"""
+Main genome file for generating a genotype that can be used for generating a neural net
+"""
+
 import random
 import numpy as np
 import activations
@@ -27,11 +31,10 @@ class LinkGene:
 class Genome:
     """Contains Everything needed for a NN(phenotype)"""
     def __init__(self, genome_id:int, num_inputs:int, num_outputs:int) -> None:
-        self.genome_id = genome_id#make default genome have no hidden layers
+        self.genome_id = genome_id#default genome has no hidden layers and is fully connected as of now
         self.num_inputs = num_inputs
         self.num_outputs = num_outputs
         self.neurons = [] #contains NeuronGene nodes
-        #generated at the beginning
         self.links = []#contains LinkGenes
         self.fill_link_neurons()
 
@@ -46,49 +49,68 @@ class Genome:
     def fill_link_neurons(self):#cant be used for adding and removing Nodes
         """This does not feel very efficient but as long as the NNs stay small should be good"""
         current_id = 0
-        list_of_output_nodes = []
-        list_of_input_nodes = []
+        dict_of_input_nodes = {}
+        dict_of_output_nodes = {}
+        dict_of_hidden_nodes = {}
         for node in range(self.num_inputs):#generates the input nodes
-            list_of_input_nodes.append(NeuronGene(current_id, self._random_bias(), activations.Relu()))
+            dict_of_input_nodes[current_id] = NeuronGene(current_id, self._random_bias(), activations.Relu())
             current_id += 1
 
         for node in range(self.num_outputs):#generates the output nodes
-            list_of_output_nodes.append(NeuronGene(current_id, self._random_bias(), activations.Softmax()))# might need 2 lists to start TBD will be softmax for now
+            dict_of_output_nodes[current_id] = NeuronGene(current_id, self._random_bias(), activations.Softmax())#TBD will be softmax for now
             current_id += 1
 
-        for node in list_of_input_nodes:#makes the pointers for a dense NN
-            for out in list_of_output_nodes:
-                link = LinkId(node.neuron_id, out.neuron_id)
+        for node in dict_of_input_nodes.items():#makes the pointers for a dense NN
+            for out in dict_of_output_nodes.items():
+                link = LinkId(node[1].neuron_id, out[1].neuron_id)
                 self.links.append(LinkGene(link, self._random_weight(), True))
 
-        self.neurons= list_of_input_nodes + list_of_output_nodes
+        self.neurons= {"input":dict_of_input_nodes, 
+                       "output":dict_of_output_nodes, 
+                       "hidden":dict_of_hidden_nodes}#not sure I love having nodes organized like this
 
     def forward_pass(self):
-        """looks at each link then locates the start of the link and the end once it is found does the calculations
-        to find what the end of the links new value should be"""
-        start_node, end_node = None, None
+        """looks at a link then indexes each node to do calculations for a forward pass"""
+        start_node, end_node, current_start_node = None, None, None
         for link in self.links:
-            for node in self.neurons:
-                if link.link_id.input_id == node.neuron_id:
-                    start_node = node
-                elif link.link_id.output_id == node.neuron_id:
-                    end_node = node
-                elif start_node and end_node is not None:
-                    break
-            start_node.current_value = start_node.activation_func.forward(start_node.current_value + start_node.bias)
-            end_node.current_value = start_node.current_value * link.weight
-            #final activation of softmax is not applied
-            #STORE NEURONS IN A DICT FOR FASTER FORWARD PASSES?
-            #SET UP FOR TESTING NEXT AND COMMENT
+            start_node = self.neurons["input"][link.link_id.input_id]
+
+            if start_node is not current_start_node:#stops start node from being continually added in
+                start_node.current_value = start_node.activation_func.forward(start_node.current_value + start_node.bias)
+                current_start_node = start_node
+            #ugly solution
+
+            end_node = self.neurons["output"][link.link_id.output_id]
+            end_node.current_value += start_node.current_value * link.weight
 
 
 if __name__ == "__main__":
-    t_genome = Genome(genome_id= 1, num_inputs=3, num_outputs=3)
-    print(1)
-    for neurons in t_genome.neurons:
-        print(neurons.current_value)
+    t_genome = Genome(genome_id= 1, num_inputs=6, num_outputs=1)
+
+    print("'Inputs'")
+    for neuron in t_genome.neurons["input"]:
+        print(t_genome.neurons["input"][neuron].current_value)
+    print("-----------------------")
+    print("'Outputs'")
+    for neuron in t_genome.neurons["output"]:
+        print(t_genome.neurons["output"][neuron].current_value)
+
+
     t_genome.forward_pass()
     print("\n")
-    for neurons in t_genome.neurons:
-        print(neurons.current_value)
-    print(1)
+
+    print("'Inputs'")
+    for neuron in t_genome.neurons["input"]:
+        print(t_genome.neurons["input"][neuron].current_value)
+    print("-----------------------")
+    print("'Outputs'")
+    for neuron in t_genome.neurons["output"]:
+        print(t_genome.neurons["output"][neuron].current_value)
+
+"""
+TODO:
+    start brainstorming how to add in nodes and play with having mutations
+    "kinda complete"maybe separate the nodes into 3 dictionaries of "input, hidden and output" (in def forward_pass)
+    apply softmax to output nodes
+    add hidden nodes in theory to forward pass
+"""
