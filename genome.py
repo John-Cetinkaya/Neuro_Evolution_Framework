@@ -76,12 +76,12 @@ class Genome:
                        "output":dict_of_output_nodes, 
                        "hidden":dict_of_hidden_nodes}#not sure I love having nodes organized like this
 
-    def forward_pass(self):
+    def forward_pass_old(self):
         """looks at a link then indexes each node to do calculations for a forward pass"""
         start_node, end_node, current_start_node = None, None, None
         for link in self.links:
             if link.is_enabled:
-                start_node = self.neurons["input"][link.link_id.input_id]
+                start_node = self.neurons["input"][link.link_id.input_id]#find neuron with matching input id as link
 
                 if start_node is not current_start_node:#stops start node bias from being continually added in
                     start_node.current_value = start_node.activation_func.forward(start_node.current_value + start_node.bias)
@@ -90,6 +90,15 @@ class Genome:
 
                 end_node = self.neurons["output"][link.link_id.output_id]
                 end_node.current_value += start_node.current_value * link.weight
+    
+    def forward_pass(self):#I THINK THIS IS A BAD IDEA
+
+        for node_type in self.neurons:
+            for node in self.neurons[node_type]:
+                node.current_value += node.bias
+                for link in self.links:
+                    if link.link_id.input_id == node.neuron_id:
+                        pass
 
     def add_link_old(self): #old and ugly
         """Creates a random new link and checks if the link already exists"""
@@ -166,6 +175,6 @@ TODO:
     "kinda complete"maybe separate the nodes into 3 dictionaries of "input, hidden and output" (in def forward_pass)
     apply softmax to output nodes
     add hidden nodes in theory to forward pass
-    Make it so add link cant add if the link already exists
     No need to worry about crossover just concern yourself with having mutation before formal testing
+    maybe let neurons know if they have a edge attached to them
 """
