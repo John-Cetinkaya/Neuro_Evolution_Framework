@@ -13,7 +13,7 @@ class NeuronGene:
         self.neuron_id = neuron_id
         self.bias = bias
         self.activation_func = activation_func
-        self.current_value = random.uniform(-1,1)
+        self.current_value = 0#SHOULD THIS BE 0 AT every pass??
         #apparently holds a list of nodes that can be connected?
 
 class LinkId:
@@ -22,17 +22,24 @@ class LinkId:
         self.input_id = input_id #NeuronGene ids passed in
         self.output_id= output_id
 
+    def __eq__(self, other):
+        return (self.input_id == other.input_id and self.output_id == other.output_id)
+
 class LinkGene:
     """Contains the pointers and the weight that is multiplied from linkID input"""
     def __init__(self, link_id:LinkId, weight:float, is_enabled:bool) -> None:
         self.link_id = link_id
         self.weight = weight
         self.is_enabled = is_enabled
+    
+    def __eq__(self, other):
+        return self.link_id == other.link_id
 
 class Genome:
     """Contains Everything needed for a NN(phenotype)"""
     def __init__(self, genome_id:int, num_inputs:int, num_outputs:int) -> None:
         self.genome_id = genome_id#default genome has no hidden layers and is fully connected as of now
+        self.current_node_id = 0
         self.num_inputs = num_inputs
         self.num_outputs = num_outputs
         self.neurons = [] #contains NeuronGene nodes
@@ -49,17 +56,16 @@ class Genome:
 
     def fill_link_neurons(self):#cant be used for adding and removing Nodes CHANGE NAME!!!!!
         """This does not feel very efficient but as long as the NNs stay small should be good"""
-        current_id = 0
         dict_of_input_nodes = {}
         dict_of_output_nodes = {}
         dict_of_hidden_nodes = {}
         for node in range(self.num_inputs):#generates the input nodes
-            dict_of_input_nodes[current_id] = NeuronGene(current_id, self._random_bias(), activations.Relu())
-            current_id += 1
+            dict_of_input_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Relu())
+            self.current_node_id += 1
 
         for node in range(self.num_outputs):#generates the output nodes
-            dict_of_output_nodes[current_id] = NeuronGene(current_id, self._random_bias(), activations.Softmax())#TBD will be softmax for now
-            current_id += 1
+            dict_of_output_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Softmax())#TBD will be softmax for now
+            self.current_node_id += 1
 
         #for node in dict_of_input_nodes.items():#makes the links for a dense NN
         #    for out in dict_of_output_nodes.items():
@@ -74,22 +80,58 @@ class Genome:
         """looks at a link then indexes each node to do calculations for a forward pass"""
         start_node, end_node, current_start_node = None, None, None
         for link in self.links:
-            start_node = self.neurons["input"][link.link_id.input_id]
+            if link.is_enabled:
+                start_node = self.neurons["input"][link.link_id.input_id]
 
-            if start_node is not current_start_node:#stops start node bias from being continually added in
-                start_node.current_value = start_node.activation_func.forward(start_node.current_value + start_node.bias)
-                current_start_node = start_node
-            #ugly solution
+                if start_node is not current_start_node:#stops start node bias from being continually added in
+                    start_node.current_value = start_node.activation_func.forward(start_node.current_value + start_node.bias)
+                    current_start_node = start_node
+                #ugly solution
 
-            end_node = self.neurons["output"][link.link_id.output_id]
-            end_node.current_value += start_node.current_value * link.weight
+                end_node = self.neurons["output"][link.link_id.output_id]
+                end_node.current_value += start_node.current_value * link.weight
 
-    def add_link(self):
-        """Creates a random new link"""
+    def add_link_old(self): #old and ugly
+        """Creates a random new link and checks if the link already exists"""
         node1 = random.choice(list(self.neurons['input']))
         node2 = random.choice(list(self.neurons['output']))
+        new_link_id = LinkId(node1, node2)
+        if len(self.links) == 0:
+            self.links.append(LinkGene(new_link_id, self._random_weight(),True))
+        else:
+            for i in range(len(self.links)):
+                if new_link_id == self.links[i].link_id:
+                    break
+                elif new_link_id != self.links[i].link_id and i == len(self.links)-1:
+                    self.links.append(LinkGene(new_link_id, self._random_weight(),True))
+        #NO WAY THIS IS AT ALL EFFICIENT ALL ITS UGLY AF
+    
+    def add_link(self): #will have to make work with hidden nodes too
+        node1 = random.choice(list(self.neurons['input']))
+        node2 = random.choice(list(self.neurons['output']))
+        new_link_id = LinkId(node1, node2)
+        new_link = LinkGene(new_link_id, self._random_weight(),True)
+        
+        if new_link not in self.links:
+            self.links.append(LinkGene(new_link_id, self._random_weight(),True))
+    
+    def add_node(self):
+        """Adds a node on and edge and adds a edge from the incoming to itself and from itself to outgoing
+        also sets the weights of the edges so they should have the same output as well as has no added in bias to prevent 
+        large changes"""
+        link = random.choice(self.links)
+        link.is_enabled = False
+        self.neurons["hidden"][self.current_node_id] = NeuronGene(self.current_node_id, 0,activations.Relu())
 
-        self.links.append(LinkGene(LinkId(node1, node2), self._random_weight(),True))
+        new_link_id = LinkId(link.link_id.input_id, self.current_node_id)
+        self.links.append(LinkGene(new_link_id, 1, True))
+
+        new_link_id = LinkId(self.current_node_id, link.link_id.output_id)
+        self.links.append(LinkGene(new_link_id, link.weight, True))
+        self.current_node_id += 1
+
+        self.links.remove(link)
+
 
 
 if __name__ == "__main__":
@@ -105,6 +147,8 @@ if __name__ == "__main__":
 
     t_genome.add_link()
 
+    t_genome.add_node()
+
 
     t_genome.forward_pass()
     print("\n")
@@ -119,9 +163,9 @@ if __name__ == "__main__":
 
 """
 TODO:
-    start brainstorming how to add in nodes and play with having mutations
     "kinda complete"maybe separate the nodes into 3 dictionaries of "input, hidden and output" (in def forward_pass)
     apply softmax to output nodes
     add hidden nodes in theory to forward pass
     Make it so add link cant add if the link already exists
+    No need to worry about crossover just concern yourself with having mutation before formal testing
 """
