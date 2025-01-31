@@ -1,7 +1,7 @@
 """
 Main genome file for generating a genotype that can be used for generating a neural net
 """
-
+import copy
 import random
 import numpy as np
 import activations
@@ -31,7 +31,7 @@ class LinkGene:
         self.link_id = link_id
         self.weight = weight
         self.is_enabled = is_enabled
-    
+
     def __eq__(self, other):
         return self.link_id == other.link_id
 
@@ -59,11 +59,10 @@ class Genome:
         dict_of_input_nodes = {}
         dict_of_output_nodes = {}
         dict_of_hidden_nodes = {}
-        for node in range(self.num_inputs):#generates the input nodes
+        for _ in range(self.num_inputs):#generates the input nodes
             dict_of_input_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Relu())
             self.current_node_id += 1
-
-        for node in range(self.num_outputs):#generates the output nodes
+        for _ in range(self.num_outputs):#generates the output nodes
             dict_of_output_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Softmax())#TBD will be softmax for now
             self.current_node_id += 1
 
@@ -108,14 +107,15 @@ class Genome:
         if len(self.links) == 0:
             self.links.append(LinkGene(new_link_id, self._random_weight(),True))
         else:
-            for i in range(len(self.links)):
+            for i, link in enumerate(self.links):
                 if new_link_id == self.links[i].link_id:
                     break
-                elif new_link_id != self.links[i].link_id and i == len(self.links)-1:
+                if new_link_id != self.links[i].link_id and i == len(self.links)-1:
                     self.links.append(LinkGene(new_link_id, self._random_weight(),True))
         #NO WAY THIS IS AT ALL EFFICIENT ALL ITS UGLY AF
     
     def add_link(self): #will have to make work with hidden nodes too
+        """Creates a random new link and checks if the link already exists"""
         node1 = random.choice(list(self.neurons['input']))
         node2 = random.choice(list(self.neurons['output']))
         new_link_id = LinkId(node1, node2)
@@ -141,6 +141,37 @@ class Genome:
 
         self.links.remove(link)
 
+    def _top_sort(self):
+        """This just might be the most disgusting topological sort algo that has ever been made"""
+        ordered_neurons = []
+        links_copy = copy.deepcopy(self.links)
+        neurons_copy = copy.deepcopy(self.neurons)
+
+        while len(links_copy) != 0:
+            output_collection = set()
+            neuron_id_collection = set()
+
+            for neuron_type in neurons_copy:
+                for neuron in neurons_copy[neuron_type]:
+                    neuron_id_collection.add(neuron)
+
+            for link in links_copy:
+                output_collection.add(link.link_id.output_id)
+
+            ordered_neurons.extend(list(neuron_id_collection ^ output_collection))
+
+            for link in links_copy:
+                if link.link_id.input_id in ordered_neurons:
+                    links_copy.remove(link)
+
+            temp = copy.deepcopy(neurons_copy)
+            for neuron_type in neurons_copy:
+                for neuron in neurons_copy[neuron_type]:
+                    if neuron in ordered_neurons:
+                        del(temp[neuron_type][neuron])
+                    #could cause problems removing from a list you are iterating over
+            neurons_copy = temp
+        return ordered_neurons
 
 
 if __name__ == "__main__":
@@ -177,4 +208,46 @@ TODO:
     add hidden nodes in theory to forward pass
     No need to worry about crossover just concern yourself with having mutation before formal testing
     maybe let neurons know if they have a edge attached to them
+
+    option1:
+    sudo function:
+    look at neuron see if it has outgoing edges
+    if yes add it to ordered
+    if no dont do anything
+    continue till no nodes have outgoing edges
+
+    option 2:
+    Sudo function:
+    make a collection of all link output_ids
+    compare that to all neuron ids
+    make a list of non overlaps
+    remove non overlaps
+    rerun
+
+def _top_sort(self):
+    ordered_neurons = []
+    links_copy = copy.deepcopy(self.links)
+    neurons_copy = copy.deepcopy(self.neurons)
+
+    while links_copy != 0:
+        output_collection = set()
+        neuron_id_collection = set()
+
+        for neuron in neurons_copy:
+            neuron_id_collection.add(self.neuron_id)
+
+        for link in links_copy:
+            output_collection.add(link.link_id.output_id)
+
+        ordered_neurons.extend(list(neuron_id_collection ^ output_collection))
+
+        for link in links_copy:
+            if link.link_id.input_id is in ordered_neurons:
+                links_copy.remove(link)
+        for neuron in neurons_copy:
+            if neuron.neuron_id is in ordered_neurons:
+                neurons_copy.remove(neuron)
+                #could cause problems removing from a list you are iterating over
+    return ordered_neurons
+
 """

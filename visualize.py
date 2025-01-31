@@ -6,11 +6,13 @@ from genome import Genome
 import networkx as nx
 import matplotlib.pyplot as plt
 
-test_g = Genome(0,2,1)
+test_g = Genome(0,3,1)
 test_g.add_link()
 test_g.add_link()
 test_g.add_node()
+test_g.add_node()
 
+print(test_g._top_sort())
 
 G = nx.DiGraph()
 for node_type in test_g.neurons:
