@@ -168,11 +168,13 @@ class Genome:
             for neuron_type in neurons_copy:
                 for neuron in neurons_copy[neuron_type]:
                     if neuron in ordered_neurons:
-                        del(temp[neuron_type][neuron])
+                        del temp[neuron_type][neuron]
                     #could cause problems removing from a list you are iterating over
             neurons_copy = temp
         return ordered_neurons
 
+def _top_sort_new(self):
+    pass
 
 if __name__ == "__main__":
     t_genome = Genome(genome_id= 1, num_inputs=6, num_outputs=1)
@@ -223,31 +225,5 @@ TODO:
     make a list of non overlaps
     remove non overlaps
     rerun
-
-def _top_sort(self):
-    ordered_neurons = []
-    links_copy = copy.deepcopy(self.links)
-    neurons_copy = copy.deepcopy(self.neurons)
-
-    while links_copy != 0:
-        output_collection = set()
-        neuron_id_collection = set()
-
-        for neuron in neurons_copy:
-            neuron_id_collection.add(self.neuron_id)
-
-        for link in links_copy:
-            output_collection.add(link.link_id.output_id)
-
-        ordered_neurons.extend(list(neuron_id_collection ^ output_collection))
-
-        for link in links_copy:
-            if link.link_id.input_id is in ordered_neurons:
-                links_copy.remove(link)
-        for neuron in neurons_copy:
-            if neuron.neuron_id is in ordered_neurons:
-                neurons_copy.remove(neuron)
-                #could cause problems removing from a list you are iterating over
-    return ordered_neurons
 
 """
