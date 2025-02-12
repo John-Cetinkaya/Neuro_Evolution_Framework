@@ -142,39 +142,40 @@ class Genome:
         self.links.remove(link)
 
     def _top_sort(self):
-        """This just might be the most disgusting topological sort algo that has ever been made"""
-        ordered_neurons = []
-        links_copy = copy.deepcopy(self.links)
-        neurons_copy = copy.deepcopy(self.neurons)
+        node_edge_dict = {}
+        sorted_nodes = []
+        added_nodes = []
+        sorted_links = [] #????
 
-        while len(links_copy) != 0:
-            output_collection = set()
-            neuron_id_collection = set()
+        #generates all the nodes and gives default of 0 edges
+        for node_type in self.neurons:
+            for node in self.neurons[node_type]:
+                node_edge_dict[node] = 0
 
-            for neuron_type in neurons_copy:
-                for neuron in neurons_copy[neuron_type]:
-                    neuron_id_collection.add(neuron)
+        #fills in how many dependant nodes each node has
+        for edge in self.links:
+            node_edge_dict[edge.link_id.output_id] += 1
 
-            for link in links_copy:
-                output_collection.add(link.link_id.output_id)
+        while len(node_edge_dict) > 0:
+            added_nodes = []#used to remove values from dictionary
 
-            ordered_neurons.extend(list(neuron_id_collection ^ output_collection))
+            #checks if nodes are dependant on other nodes
+            for node, edges in node_edge_dict.items():
+                if edges == 0:
+                    sorted_nodes.append(node)
+                    added_nodes.append(node)
 
-            for link in links_copy:
-                if link.link_id.input_id in ordered_neurons:
-                    links_copy.remove(link)
+            #checks if the degree should be reduced for all values
+            for link in self.links:
+                if (link.link_id.input_id in sorted_nodes) and (link.link_id.input_id in node_edge_dict.keys()):
+                    node_edge_dict[link.link_id.output_id] -= 1
 
-            temp = copy.deepcopy(neurons_copy)
-            for neuron_type in neurons_copy:
-                for neuron in neurons_copy[neuron_type]:
-                    if neuron in ordered_neurons:
-                        del temp[neuron_type][neuron]
-                    #could cause problems removing from a list you are iterating over
-            neurons_copy = temp
-        return ordered_neurons
+            #decrements the node if it is sorted
+            for node in added_nodes:
+                del node_edge_dict[node]
 
-def _top_sort_new(self):
-    pass
+        return sorted_nodes
+
 
 if __name__ == "__main__":
     t_genome = Genome(genome_id= 1, num_inputs=6, num_outputs=1)

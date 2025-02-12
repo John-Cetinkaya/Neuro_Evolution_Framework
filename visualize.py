@@ -6,11 +6,14 @@ from genome import Genome
 import networkx as nx
 import matplotlib.pyplot as plt
 
-test_g = Genome(0,3,1)
-test_g.add_link()
+test_g = Genome(0,8,4)
 test_g.add_link()
 test_g.add_node()
-test_g.add_node()
+test_g.add_link()
+test_g.add_link()
+test_g.add_link()
+test_g.add_link()
+test_g.add_link()
 
 print(test_g._top_sort())
 
@@ -28,6 +31,7 @@ for link in test_g.links:
 #t =nx.topological_sort(G)
 layers=test_g.neurons
 x = nx.topological_sort(G)
+print(x)
 pos = nx.multipartite_layout(x,subset_key=layers)
 nx.draw(G,pos, with_labels=True)
 plt.show()
