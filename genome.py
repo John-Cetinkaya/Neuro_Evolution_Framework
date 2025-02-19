@@ -89,15 +89,9 @@ class Genome:
 
                 end_node = self.neurons["output"][link.link_id.output_id]
                 end_node.current_value += start_node.current_value * link.weight
-    
-    def forward_pass(self):#I THINK THIS IS A BAD IDEA
 
-        for node_type in self.neurons:
-            for node in self.neurons[node_type]:
-                node.current_value += node.bias
-                for link in self.links:
-                    if link.link_id.input_id == node.neuron_id:
-                        pass
+    def forward_pass(self):#I THINK THIS IS A BAD IDEA
+        pass
 
     def add_link_old(self): #old and ugly
         """Creates a random new link and checks if the link already exists"""
@@ -123,7 +117,7 @@ class Genome:
         
         if new_link not in self.links:
             self.links.append(LinkGene(new_link_id, self._random_weight(),True))
-    
+
     def add_node(self):
         """Adds a node on and edge and adds a edge from the incoming to itself and from itself to outgoing
         also sets the weights of the edges so they should have the same output as well as has no added in bias to prevent 
@@ -169,6 +163,7 @@ class Genome:
             for link in self.links:
                 if (link.link_id.input_id in sorted_nodes) and (link.link_id.input_id in node_edge_dict.keys()):
                     node_edge_dict[link.link_id.output_id] -= 1
+                    sorted_links.append(link)
 
             #decrements the node if it is sorted
             for node in added_nodes:
@@ -206,25 +201,9 @@ if __name__ == "__main__":
 
 """
 TODO:
-    "kinda complete"maybe separate the nodes into 3 dictionaries of "input, hidden and output" (in def forward_pass)
     apply softmax to output nodes
     add hidden nodes in theory to forward pass
     No need to worry about crossover just concern yourself with having mutation before formal testing
-    maybe let neurons know if they have a edge attached to them
-
-    option1:
-    sudo function:
-    look at neuron see if it has outgoing edges
-    if yes add it to ordered
-    if no dont do anything
-    continue till no nodes have outgoing edges
-
-    option 2:
-    Sudo function:
-    make a collection of all link output_ids
-    compare that to all neuron ids
-    make a list of non overlaps
-    remove non overlaps
-    rerun
+    allow added links to add from hidden nodes to other nodes
 
 """
