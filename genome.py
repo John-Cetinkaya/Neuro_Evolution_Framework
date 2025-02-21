@@ -2,7 +2,6 @@
 Main genome file for generating a genotype that can be used for generating a neural net
 """
 import random
-import numpy as np
 import activations
 
 
@@ -13,7 +12,6 @@ class NeuronGene:
         self.bias = bias
         self.activation_func = activation_func
         self.current_value = 0#SHOULD THIS BE 0 AT every pass??
-        #apparently holds a list of nodes that can be connected?
 
 class LinkId:
     """looks at two nodes and makes a pointer from input to output"""
@@ -74,7 +72,8 @@ class Genome:
                        "output":dict_of_output_nodes, 
                        "hidden":dict_of_hidden_nodes}#not sure I love having nodes organized like this
 
-    def forward_pass(self):#this feels very wrong
+    def forward_pass(self):
+        """preforms a single pass over the Neural Network"""
         working_node = None
 
         for link in self.links:
@@ -87,13 +86,12 @@ class Genome:
                     first_node = self.neurons[node_type][input_node]
                     if working_node != first_node:
                         working_node = first_node
-                        working_node.current_value += working_node.bias
+                        working_node.current_value = working_node.activation_func.forward(working_node.current_value + working_node.bias)
 
                 if output_node in self.neurons[node_type]:#multiply the weight
                     #maybe reset all nodes except inputs on each forward pass
                     second_node = self.neurons[node_type][output_node]
                     second_node.current_value = working_node.current_value * link.weight
-
 
     def add_link(self): #will have to make work with hidden nodes too
         """Creates a random new link and checks if the link already exists"""
@@ -128,7 +126,7 @@ class Genome:
         node_edge_dict = {}
         sorted_nodes = []
         added_nodes = []
-        sorted_links = [] #????
+        sorted_links = []
 
         #generates all the nodes and gives default of 0 edges
         for node_type in self.neurons:
@@ -166,7 +164,7 @@ if __name__ == "__main__":
 
     print("'Inputs'")
     for neuron in t_genome.neurons["input"]:
-        print(t_genome.neurons["input"][neuron].current_value + random.uniform(-1,1))
+        print(t_genome.neurons["input"][neuron].current_value + random.uniform(0,40))
     print("-----------------------")
     print("'Outputs'")
     for neuron in t_genome.neurons["output"]:
@@ -193,7 +191,6 @@ if __name__ == "__main__":
 """
 TODO:
     apply softmax to output nodes
-    add hidden nodes in theory to forward pass
     No need to worry about crossover just concern yourself with having mutation before formal testing
     allow added links to add from hidden nodes to other nodes
 """
