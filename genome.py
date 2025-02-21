@@ -1,7 +1,6 @@
 """
 Main genome file for generating a genotype that can be used for generating a neural net
 """
-import copy
 import random
 import numpy as np
 import activations
@@ -75,48 +74,37 @@ class Genome:
                        "output":dict_of_output_nodes, 
                        "hidden":dict_of_hidden_nodes}#not sure I love having nodes organized like this
 
-    def forward_pass_old(self):
-        """looks at a link then indexes each node to do calculations for a forward pass"""
-        start_node, end_node, current_start_node = None, None, None
+    def forward_pass(self):#this feels very wrong
+        working_node = None
+
         for link in self.links:
-            if link.is_enabled:
-                start_node = self.neurons["input"][link.link_id.input_id]#find neuron with matching input id as link
+            input_node = link.link_id.input_id
+            output_node = link.link_id.output_id
 
-                if start_node is not current_start_node:#stops start node bias from being continually added in
-                    start_node.current_value = start_node.activation_func.forward(start_node.current_value + start_node.bias)
-                    current_start_node = start_node
-                #ugly solution
+            for node_type in self.neurons:
+                #adds in bias to first node in link
+                if input_node in self.neurons[node_type]:
+                    first_node = self.neurons[node_type][input_node]
+                    if working_node != first_node:
+                        working_node = first_node
+                        working_node.current_value += working_node.bias
 
-                end_node = self.neurons["output"][link.link_id.output_id]
-                end_node.current_value += start_node.current_value * link.weight
+                if output_node in self.neurons[node_type]:#multiply the weight
+                    #maybe reset all nodes except inputs on each forward pass
+                    second_node = self.neurons[node_type][output_node]
+                    second_node.current_value = working_node.current_value * link.weight
 
-    def forward_pass(self):#I THINK THIS IS A BAD IDEA
-        pass
 
-    def add_link_old(self): #old and ugly
-        """Creates a random new link and checks if the link already exists"""
-        node1 = random.choice(list(self.neurons['input']))
-        node2 = random.choice(list(self.neurons['output']))
-        new_link_id = LinkId(node1, node2)
-        if len(self.links) == 0:
-            self.links.append(LinkGene(new_link_id, self._random_weight(),True))
-        else:
-            for i, link in enumerate(self.links):
-                if new_link_id == self.links[i].link_id:
-                    break
-                if new_link_id != self.links[i].link_id and i == len(self.links)-1:
-                    self.links.append(LinkGene(new_link_id, self._random_weight(),True))
-        #NO WAY THIS IS AT ALL EFFICIENT ALL ITS UGLY AF
-    
     def add_link(self): #will have to make work with hidden nodes too
         """Creates a random new link and checks if the link already exists"""
         node1 = random.choice(list(self.neurons['input']))
         node2 = random.choice(list(self.neurons['output']))
         new_link_id = LinkId(node1, node2)
         new_link = LinkGene(new_link_id, self._random_weight(),True)
-        
+
         if new_link not in self.links:
             self.links.append(LinkGene(new_link_id, self._random_weight(),True))
+            self.links = self._top_sort()
 
     def add_node(self):
         """Adds a node on and edge and adds a edge from the incoming to itself and from itself to outgoing
@@ -134,6 +122,7 @@ class Genome:
         self.current_node_id += 1
 
         self.links.remove(link)
+        self.links = self._top_sort()
 
     def _top_sort(self):
         node_edge_dict = {}
@@ -169,23 +158,25 @@ class Genome:
             for node in added_nodes:
                 del node_edge_dict[node]
 
-        return sorted_nodes
+        return sorted_links
 
 
 if __name__ == "__main__":
-    t_genome = Genome(genome_id= 1, num_inputs=6, num_outputs=1)
+    t_genome = Genome(genome_id= 1, num_inputs=6, num_outputs=2)
 
     print("'Inputs'")
     for neuron in t_genome.neurons["input"]:
-        print(t_genome.neurons["input"][neuron].current_value)
+        print(t_genome.neurons["input"][neuron].current_value + random.uniform(-1,1))
     print("-----------------------")
     print("'Outputs'")
     for neuron in t_genome.neurons["output"]:
         print(t_genome.neurons["output"][neuron].current_value)
 
     t_genome.add_link()
+    t_genome.add_link()
+    t_genome.add_link()
+    t_genome.add_link()
 
-    t_genome.add_node()
 
 
     t_genome.forward_pass()
@@ -205,5 +196,4 @@ TODO:
     add hidden nodes in theory to forward pass
     No need to worry about crossover just concern yourself with having mutation before formal testing
     allow added links to add from hidden nodes to other nodes
-
 """
