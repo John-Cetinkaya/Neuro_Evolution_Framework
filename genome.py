@@ -51,7 +51,7 @@ class Genome:
         weight = random.uniform(-1,1)
         return weight
 
-    def fill_link_neurons(self):#cant be used for adding and removing Nodes CHANGE NAME!!!!!
+    def fill_link_neurons(self):
         """This does not feel very efficient but as long as the NNs stay small should be good"""
         dict_of_input_nodes = {}
         dict_of_output_nodes = {}
@@ -73,8 +73,10 @@ class Genome:
                        "hidden":dict_of_hidden_nodes}#not sure I love having nodes organized like this
 
     def forward_pass(self):
-        """preforms a single pass over the Neural Network"""
+        """preforms a single pass over the Neural Network returns output nodes"""
+        #maybe could set current values to 0 ass you pass forward
         working_node = None
+        results = []
 
         for link in self.links:
             input_node = link.link_id.input_id
@@ -92,6 +94,10 @@ class Genome:
                     #maybe reset all nodes except inputs on each forward pass
                     second_node = self.neurons[node_type][output_node]
                     second_node.current_value = working_node.current_value * link.weight
+
+        for node in self.neurons["output"]:
+            results.append(self.neurons["output"][node].current_value)
+        return results
 
     def add_link(self): #will have to make work with hidden nodes too
         """Creates a random new link and checks if the link already exists"""
@@ -121,6 +127,11 @@ class Genome:
 
         self.links.remove(link)
         self.links = self._top_sort()
+
+    def adjust_weight(self, upper= .5, lower= -.5):
+        """adjusts a random link weight"""
+        link = self.links[random.randrange(0,self.links)]
+        link.weight += random.uniform(upper, lower)
 
     def _top_sort(self):
         node_edge_dict = {}
@@ -158,6 +169,24 @@ class Genome:
 
         return sorted_links
 
+    def mutate(self, add_node_chance = .02, add_link_chance = .1, adjust_weight_chance = .2):
+        """pretty bad way to have a chance to have a mutation or all"""
+        chance = random.randrange(0, 101) * .01
+
+        if add_node_chance >= chance:
+            self.add_node()
+        
+        chance = random.randrange(0, 101) * .01
+
+        if add_link_chance >= chance:
+            self.add_link()
+        
+        chance = random.randrange(0, 101) * .01
+
+        if adjust_weight_chance >= chance:
+            self.adjust_weight()
+
+
 
 if __name__ == "__main__":
     t_genome = Genome(genome_id= 1, num_inputs=6, num_outputs=2)
@@ -177,7 +206,7 @@ if __name__ == "__main__":
 
 
 
-    t_genome.forward_pass()
+    print(t_genome.forward_pass())
     print("\n")
 
     print("'Inputs'")
