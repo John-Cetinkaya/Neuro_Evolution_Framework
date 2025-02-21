@@ -95,6 +95,7 @@ class Genome:
                     second_node = self.neurons[node_type][output_node]
                     second_node.current_value = working_node.current_value * link.weight
 
+        #pulls just the results not a very pretty way of doing this
         for node in self.neurons["output"]:
             results.append(self.neurons["output"][node].current_value)
         return results
@@ -130,8 +131,14 @@ class Genome:
 
     def adjust_weight(self, upper= .5, lower= -.5):
         """adjusts a random link weight"""
-        link = self.links[random.randrange(0,self.links)]
+        link = self.links[random.randrange(0,len(self.links))]
         link.weight += random.uniform(upper, lower)
+    
+    def adjust_bias(self, upper= .5, lower= -.5):
+        node_type = self.neurons[random.choice(self.neurons)]
+        node = self.neurons[node_type][random.choice(self.neurons[node_type])]
+
+        node.bias += random.uniform(upper, lower)
 
     def _top_sort(self):
         node_edge_dict = {}
@@ -169,23 +176,23 @@ class Genome:
 
         return sorted_links
 
-    def mutate(self, add_node_chance = .02, add_link_chance = .1, adjust_weight_chance = .2):
+    def mutate(self, add_node_chance = .02, add_link_chance = .1, adjust_weight_chance = .2, adjust_bias_chance = .15):
         """pretty bad way to have a chance to have a mutation or all"""
         chance = random.randrange(0, 101) * .01
-
         if add_node_chance >= chance:
             self.add_node()
         
         chance = random.randrange(0, 101) * .01
-
         if add_link_chance >= chance:
             self.add_link()
         
         chance = random.randrange(0, 101) * .01
-
         if adjust_weight_chance >= chance:
             self.adjust_weight()
-
+        
+        chance = random.randrange(0, 101) * .01
+        if adjust_bias_chance >= chance:
+            self.adjust_weight()
 
 
 if __name__ == "__main__":

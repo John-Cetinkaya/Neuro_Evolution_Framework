@@ -17,9 +17,10 @@ class Softmax:
         self.output = None
     def forward(self, inputs):
         """Calculates output"""
-        exp_values = np.exp(inputs- np.max(inputs, axis= 1, keepdims=True))
-        probabilities = exp_values/np.sum(exp_values, axis=1, keepdims=True)
+        exp_values = np.exp(inputs- np.max(inputs))
+        probabilities = exp_values/np.sum(exp_values)
         self.output = probabilities
+        return self.output
 
 class TestAct:
     def forward(self, inputs):
