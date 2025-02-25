@@ -115,24 +115,30 @@ class Genome:
         """Adds a node on and edge and adds a edge from the incoming to itself and from itself to outgoing
         also sets the weights of the edges so they should have the same output as well as has no added in bias to prevent 
         large changes"""
-        link = random.choice(self.links)
-        link.is_enabled = False
-        self.neurons["hidden"][self.current_node_id] = NeuronGene(self.current_node_id, 0,activations.Relu())
+        try:
+            link = random.choice(self.links)
+            link.is_enabled = False
+            self.neurons["hidden"][self.current_node_id] = NeuronGene(self.current_node_id, 0,activations.Relu())
 
-        new_link_id = LinkId(link.link_id.input_id, self.current_node_id)
-        self.links.append(LinkGene(new_link_id, 1, True))
+            new_link_id = LinkId(link.link_id.input_id, self.current_node_id)
+            self.links.append(LinkGene(new_link_id, 1, True))
 
-        new_link_id = LinkId(self.current_node_id, link.link_id.output_id)
-        self.links.append(LinkGene(new_link_id, link.weight, True))
-        self.current_node_id += 1
+            new_link_id = LinkId(self.current_node_id, link.link_id.output_id)
+            self.links.append(LinkGene(new_link_id, link.weight, True))
+            self.current_node_id += 1
 
-        self.links.remove(link)
-        self.links = self._top_sort()
+            self.links.remove(link)
+            self.links = self._top_sort()
+        except:
+            pass
 
     def adjust_weight(self, upper= .5, lower= -.5):
         """adjusts a random link weight"""
-        link = self.links[random.randrange(0,len(self.links))]
-        link.weight += random.uniform(upper, lower)
+        try:
+            link = self.links[random.randrange(0,len(self.links))]
+            link.weight += random.uniform(upper, lower)
+        except:
+            pass
     
     def adjust_bias(self, upper= .5, lower= -.5):
         node_type = self.neurons[random.choice(self.neurons)]
@@ -176,23 +182,26 @@ class Genome:
 
         return sorted_links
 
-    def mutate(self, add_node_chance = .02, add_link_chance = .1, adjust_weight_chance = .2, adjust_bias_chance = .15):
+    def mutate(self, add_node_chance = .1, add_link_chance = .4, adjust_weight_chance = .5, adjust_bias_chance = .2):
         """pretty bad way to have a chance to have a mutation or all"""
+        chance_for_type = random.randint(0,4)
         chance = random.randrange(0, 101) * .01
-        if add_node_chance >= chance:
-            self.add_node()
+        if chance_for_type == 0:
+            if add_node_chance >= chance:
+                self.add_node()
         
-        chance = random.randrange(0, 101) * .01
-        if add_link_chance >= chance:
-            self.add_link()
+        if chance_for_type == 1:
+            if add_link_chance >= chance:
+                self.add_link()
         
-        chance = random.randrange(0, 101) * .01
-        if adjust_weight_chance >= chance:
-            self.adjust_weight()
+        if chance_for_type == 2:
+            if adjust_bias_chance >= chance:
+                self.adjust_weight()
         
-        chance = random.randrange(0, 101) * .01
-        if adjust_bias_chance >= chance:
-            self.adjust_weight()
+        if chance_for_type == 3:
+            if adjust_weight_chance >= chance:
+                self.adjust_weight()
+
 
 
 if __name__ == "__main__":
