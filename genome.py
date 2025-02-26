@@ -57,7 +57,7 @@ class Genome:
         dict_of_output_nodes = {}
         dict_of_hidden_nodes = {}
         for _ in range(self.num_inputs):#generates the input nodes
-            dict_of_input_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Relu())
+            dict_of_input_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.tanh())
             self.current_node_id += 1
         for _ in range(self.num_outputs):#generates the output nodes
             dict_of_output_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Softmax())#TBD will be softmax for now

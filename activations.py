@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 """File for storing various activation functions"""
 
@@ -21,6 +22,13 @@ class Softmax:
         probabilities = exp_values/np.sum(exp_values)
         self.output = probabilities
         return self.output
+
+class tanh:
+    def __init__(self):
+        self.output = None
+    
+    def forward(self, inputs):
+        return math.tanh(inputs)
 
 class TestAct:
     def forward(self, inputs):

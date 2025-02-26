@@ -43,9 +43,19 @@ class Population:#have population track fitness maybe store individuals and fitn
         pop = []
         genome_id = 0
         for _ in range(size):
-            pop.append(Individual(genome_id, self.input_neurons, self.output_neurons, self.env.actions))#self.env.actions))
+            pop.append(Individual(genome_id, self.input_neurons, self.output_neurons, self.env.actions))
             genome_id += 1
         return pop
+
+    def select_new_pop_tourney(self, k,percent_kept = .33):
+        pop_to_keep = round(percent_kept * len(self.pop))
+        new_pop = []
+        new_pop.extend(self.pop[:pop_to_keep])
+        for _ in self.pop[pop_to_keep:]:
+            choices = random.sample(self.pop, k=k)
+            choices.sort()
+            new_pop.append(choices[0])
+        self.pop = new_pop
 
     def mutate(self, percent_kept = .33):
         """mutates the population does not touch highest fitness critters"""
@@ -58,11 +68,11 @@ class Population:#have population track fitness maybe store individuals and fitn
         while current_gen != num_of_gens:
             for individual in self.pop:
                 for frame in range(ticks):
-                    prediction = individual.gen_move(self.env.position)
+                    prediction = individual.gen_move(self.env.observations)
                     self.env.move(step = 1, prediction = prediction)
                 individual.set_fitness(self.env.gen_fitness())
                 self.env.reset()
-                    #change position or something
+
 
             self.fitness_sort()
             self.mutate()
@@ -76,7 +86,7 @@ class Population:#have population track fitness maybe store individuals and fitn
                 file.write("\n")
                 file.close()
             current_gen += 1
-            
+
 
     def fitness_sort(self):
         """sorts the individuals based on fitness"""
@@ -90,7 +100,7 @@ class Population:#have population track fitness maybe store individuals and fitn
 
 if __name__ == "__main__":
 
-    
+
     test_guy = Individual(0,4,4, [1,-1,2,3])
     test_guy.neural_net.add_link()
     test_guy.neural_net.add_link()

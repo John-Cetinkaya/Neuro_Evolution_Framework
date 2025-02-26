@@ -13,19 +13,19 @@ class Simple_Navigation_Env:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.actions = [0,1,2,3]#N,E,S,W
-        self.goal = [random.randint(5,self.width),random.randint(5,self.height)]
+        self.actions = [0,1,2,3,4]#N,E,S,W, do nothing
+        self.goal = [random.randint(0,self.width),random.randint(0,self.height)]
         self.position = [0,0]
+        self.observations = self.goal + self.position
         self.farthest_distance = math.sqrt(((self.width/2)**2) + ((self.height/2)**2))
         self.current_fitness = None
 
     def reset(self):
-        if self.current_fitness == 1:
+        if self.current_fitness == 1:#resets goal location if someone finds the goal
             self.goal = [random.randint(0,self.width),random.randint(0,self.height)]
             self.farthest_distance = math.sqrt(((self.width/2)**2) + ((self.height/2)**2))
         else:
             self.position = [0,0]
-            
 
     def _distance_to(self, pos_x2, pos_y2):
         """generates the distance while accounting for the screen wrapping around"""
@@ -48,6 +48,8 @@ class Simple_Navigation_Env:
             fitness = (self.farthest_distance-self._distance_to(self.goal[0],self.goal[1]))/self.farthest_distance
             if fitness <= 0:
                 fitness = .001
+            elif self.position == self.goal:
+                fitness = 1
         self.current_fitness = fitness
         return fitness
 
@@ -70,3 +72,5 @@ class Simple_Navigation_Env:
             self.position[0] -= step#West
             if self.position[0] < 0:
                 self.position[0] = self.position[0] + self.width+1
+        elif i == 4:
+            pass#dont move
