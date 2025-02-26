@@ -30,7 +30,12 @@ class tanh:
     def forward(self, inputs):
         return math.tanh(inputs)
 
-class TestAct:
-    def forward(self, inputs):
-        output = inputs +1
-        return output
+class Identity:
+    def __init__(self):
+        self.output = None
+    def forward(self,inputs):
+        self.output = inputs
+        return self.output
+
+class Sigmoid:
+    pass

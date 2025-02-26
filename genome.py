@@ -56,8 +56,8 @@ class Genome:
         dict_of_input_nodes = {}
         dict_of_output_nodes = {}
         dict_of_hidden_nodes = {}
-        for _ in range(self.num_inputs):#generates the input nodes
-            dict_of_input_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.tanh())
+        for _ in range(self.num_inputs):#generates the input nodes MAKE INPUT FUC IDENTITY
+            dict_of_input_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Identity())
             self.current_node_id += 1
         for _ in range(self.num_outputs):#generates the output nodes
             dict_of_output_nodes[self.current_node_id] = NeuronGene(self.current_node_id, self._random_bias(), activations.Softmax())#TBD will be softmax for now
@@ -72,9 +72,15 @@ class Genome:
                        "output":dict_of_output_nodes, 
                        "hidden":dict_of_hidden_nodes}#not sure I love having nodes organized like this
 
+
+    def reset_NN_values(self):
+        for node_type in self.neurons:
+            for node in self.neurons[node_type]:
+                self.neurons[node_type][node].current_value = 0
+        
     def forward_pass(self):
         """preforms a single pass over the Neural Network returns output nodes"""
-        #maybe could set current values to 0 ass you pass forward
+        #maybe could set current values to 0 as you pass forward
         working_node = None
         results = []
 
@@ -98,6 +104,8 @@ class Genome:
         #pulls just the results not a very pretty way of doing this
         for node in self.neurons["output"]:
             results.append(self.neurons["output"][node].current_value)
+        
+        self.reset_NN_values()
         return results
 
     def add_link(self): #will have to make work with hidden nodes too
@@ -118,7 +126,7 @@ class Genome:
         try:
             link = random.choice(self.links)
             link.is_enabled = False
-            self.neurons["hidden"][self.current_node_id] = NeuronGene(self.current_node_id, 0,activations.Relu())
+            self.neurons["hidden"][self.current_node_id] = NeuronGene(self.current_node_id, 0,activations.tanh())
 
             new_link_id = LinkId(link.link_id.input_id, self.current_node_id)
             self.links.append(LinkGene(new_link_id, 1, True))

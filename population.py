@@ -22,7 +22,8 @@ class Individual:
             self.neural_net.neurons["input"][node_index].current_value = inputs[node_index]
         activation_test = Softmax()
         action = activation_test.forward(self.neural_net.forward_pass())#makes a choice by applying softmax
-        return self.actions[np.argmax(action)]
+        return np.argmax(action) #WILL ONLY WORK FOR DISCRETE TYPE ACTION SETS
+        #return self.actions[np.argmax(action)] 
 
     def set_fitness(self, fitness):
         self.fitness = fitness
@@ -43,7 +44,7 @@ class Population:#have population track fitness maybe store individuals and fitn
         pop = []
         genome_id = 0
         for _ in range(size):
-            pop.append(Individual(genome_id, self.input_neurons, self.output_neurons, self.env.actions))
+            pop.append(Individual(genome_id, self.input_neurons, self.output_neurons, self.env.action_space))
             genome_id += 1
         return pop
 
