@@ -68,9 +68,9 @@ class Genome:
         #        link = LinkId(node[1].neuron_id, out[1].neuron_id)
         #        self.links.append(LinkGene(link, self._random_weight(), True))   ###ONLY FOR DENSE NNs
 
-        self.neurons= {"input":dict_of_input_nodes,
-                       "output":dict_of_output_nodes, 
-                       "hidden":dict_of_hidden_nodes}#not sure I love having nodes organized like this
+        self.neurons= {"input":dict_of_input_nodes, 
+                       "hidden":dict_of_hidden_nodes,
+                       "output":dict_of_output_nodes}#not sure I love having nodes organized like this
 
 
     def reset_NN_values(self):

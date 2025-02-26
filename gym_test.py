@@ -1,11 +1,12 @@
 import gymnasium as gym
 import population
+import test_vis
 
 env = gym.make('CartPole-v1')
 
 observation, info = env.reset()
 
-pop = population.Population(1000, env, 4, 2)
+pop = population.Population(100, env, 4, 2)
 
 current_generation = 0
 max_generation = 100
@@ -44,5 +45,6 @@ while current_generation != max_generation:
             best_of_best.fitness += reward
 
             episode_over = terminated or truncated
+        test_vis.display_NN(best_of_best.neural_net)
         print("done")
 env.close()
