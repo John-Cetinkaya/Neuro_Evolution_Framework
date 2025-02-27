@@ -149,10 +149,13 @@ class Genome:
             pass
     
     def adjust_bias(self, upper= .5, lower= -.5):
-        node_type = self.neurons[random.choice(self.neurons)]
-        node = self.neurons[node_type][random.choice(self.neurons[node_type])]
-
-        node.bias += random.uniform(upper, lower)
+        node_type = random.choice(list(self.neurons.keys()))
+        try:
+            node_id = random.choice(list(self.neurons[node_type].keys()))
+            node = self.neurons[node_type][node_id]
+            node.bias += random.uniform(upper, lower)
+        except:
+            pass
 
     def _top_sort(self):
         node_edge_dict = {}
@@ -190,25 +193,26 @@ class Genome:
 
         return sorted_links
 
-    def mutate(self, add_node_chance = .1, add_link_chance = .4, adjust_weight_chance = .5, adjust_bias_chance = .2):
-        """pretty bad way to have a chance to have a mutation or all"""
-        chance_for_type = random.randint(0,4)
-        chance = random.randrange(0, 101) * .01
-        if chance_for_type == 0:
-            if add_node_chance >= chance:
-                self.add_node()
+    def mutate(self, add_node_chance = .05, add_link_chance = .2, adjust_weight_chance = .5, adjust_bias_chance = .05, do_nothing = .2):
+        options = ["add_node", "add_link", "adjust_weight", "adjust_bias", "do_nothing"]#maybe add remove node
+        weights = [add_node_chance, add_link_chance, adjust_weight_chance, adjust_bias_chance, do_nothing]
         
-        if chance_for_type == 1:
-            if add_link_chance >= chance:
-                self.add_link()
-        
-        if chance_for_type == 2:
-            if adjust_bias_chance >= chance:
-                self.adjust_weight()
-        
-        if chance_for_type == 3:
-            if adjust_weight_chance >= chance:
-                self.adjust_weight()
+        choice = random.choices(options, weights, k=1)[0]
+
+        if choice == "add_node":
+            self.add_node()
+
+        if choice == "add_link":
+            self.add_link()
+
+        if choice == "adjust_weight":
+            self.adjust_weight()
+
+        if choice == "adjust_bias":
+            self.adjust_bias()
+
+        if choice == "do_nothing":
+            pass
 
 
 
