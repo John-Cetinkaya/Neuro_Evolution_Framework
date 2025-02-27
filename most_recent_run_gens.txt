@@ -1,0 +1,300 @@
+CURRENT GEN:1
+fitness =11.0
+
+CURRENT GEN:2
+fitness =64.0
+
+CURRENT GEN:3
+fitness =52.0
+
+CURRENT GEN:4
+fitness =65.0
+
+CURRENT GEN:5
+fitness =238.0
+
+CURRENT GEN:6
+fitness =184.0
+
+CURRENT GEN:7
+fitness =173.0
+
+CURRENT GEN:8
+fitness =219.0
+
+CURRENT GEN:9
+fitness =186.0
+
+CURRENT GEN:10
+fitness =263.0
+
+CURRENT GEN:11
+fitness =189.0
+
+CURRENT GEN:12
+fitness =180.0
+
+CURRENT GEN:13
+fitness =174.0
+
+CURRENT GEN:14
+fitness =168.0
+
+CURRENT GEN:15
+fitness =196.0
+
+CURRENT GEN:16
+fitness =235.0
+
+CURRENT GEN:17
+fitness =248.0
+
+CURRENT GEN:18
+fitness =293.0
+
+CURRENT GEN:19
+fitness =197.0
+
+CURRENT GEN:20
+fitness =273.0
+
+CURRENT GEN:21
+fitness =298.0
+
+CURRENT GEN:22
+fitness =269.0
+
+CURRENT GEN:23
+fitness =274.0
+
+CURRENT GEN:24
+fitness =231.0
+
+CURRENT GEN:25
+fitness =294.0
+
+CURRENT GEN:26
+fitness =268.0
+
+CURRENT GEN:27
+fitness =307.0
+
+CURRENT GEN:28
+fitness =291.0
+
+CURRENT GEN:29
+fitness =280.0
+
+CURRENT GEN:30
+fitness =288.0
+
+CURRENT GEN:31
+fitness =298.0
+
+CURRENT GEN:32
+fitness =290.0
+
+CURRENT GEN:33
+fitness =229.0
+
+CURRENT GEN:34
+fitness =336.0
+
+CURRENT GEN:35
+fitness =272.0
+
+CURRENT GEN:36
+fitness =345.0
+
+CURRENT GEN:37
+fitness =271.0
+
+CURRENT GEN:38
+fitness =500.0
+
+CURRENT GEN:39
+fitness =285.0
+
+CURRENT GEN:40
+fitness =259.0
+
+CURRENT GEN:41
+fitness =500.0
+
+CURRENT GEN:42
+fitness =500.0
+
+CURRENT GEN:43
+fitness =500.0
+
+CURRENT GEN:44
+fitness =500.0
+
+CURRENT GEN:45
+fitness =500.0
+
+CURRENT GEN:46
+fitness =500.0
+
+CURRENT GEN:47
+fitness =500.0
+
+CURRENT GEN:48
+fitness =500.0
+
+CURRENT GEN:49
+fitness =500.0
+
+CURRENT GEN:50
+fitness =500.0
+
+CURRENT GEN:51
+fitness =500.0
+
+CURRENT GEN:52
+fitness =500.0
+
+CURRENT GEN:53
+fitness =500.0
+
+CURRENT GEN:54
+fitness =500.0
+
+CURRENT GEN:55
+fitness =500.0
+
+CURRENT GEN:56
+fitness =500.0
+
+CURRENT GEN:57
+fitness =500.0
+
+CURRENT GEN:58
+fitness =500.0
+
+CURRENT GEN:59
+fitness =500.0
+
+CURRENT GEN:60
+fitness =500.0
+
+CURRENT GEN:61
+fitness =500.0
+
+CURRENT GEN:62
+fitness =500.0
+
+CURRENT GEN:63
+fitness =500.0
+
+CURRENT GEN:64
+fitness =500.0
+
+CURRENT GEN:65
+fitness =500.0
+
+CURRENT GEN:66
+fitness =500.0
+
+CURRENT GEN:67
+fitness =500.0
+
+CURRENT GEN:68
+fitness =500.0
+
+CURRENT GEN:69
+fitness =500.0
+
+CURRENT GEN:70
+fitness =500.0
+
+CURRENT GEN:71
+fitness =500.0
+
+CURRENT GEN:72
+fitness =500.0
+
+CURRENT GEN:73
+fitness =500.0
+
+CURRENT GEN:74
+fitness =500.0
+
+CURRENT GEN:75
+fitness =500.0
+
+CURRENT GEN:76
+fitness =500.0
+
+CURRENT GEN:77
+fitness =500.0
+
+CURRENT GEN:78
+fitness =500.0
+
+CURRENT GEN:79
+fitness =500.0
+
+CURRENT GEN:80
+fitness =500.0
+
+CURRENT GEN:81
+fitness =451.0
+
+CURRENT GEN:82
+fitness =500.0
+
+CURRENT GEN:83
+fitness =500.0
+
+CURRENT GEN:84
+fitness =500.0
+
+CURRENT GEN:85
+fitness =500.0
+
+CURRENT GEN:86
+fitness =500.0
+
+CURRENT GEN:87
+fitness =500.0
+
+CURRENT GEN:88
+fitness =500.0
+
+CURRENT GEN:89
+fitness =500.0
+
+CURRENT GEN:90
+fitness =500.0
+
+CURRENT GEN:91
+fitness =500.0
+
+CURRENT GEN:92
+fitness =500.0
+
+CURRENT GEN:93
+fitness =500.0
+
+CURRENT GEN:94
+fitness =500.0
+
+CURRENT GEN:95
+fitness =500.0
+
+CURRENT GEN:96
+fitness =500.0
+
+CURRENT GEN:97
+fitness =500.0
+
+CURRENT GEN:98
+fitness =500.0
+
+CURRENT GEN:99
+fitness =500.0
+
+CURRENT GEN:100
+fitness =500.0
+

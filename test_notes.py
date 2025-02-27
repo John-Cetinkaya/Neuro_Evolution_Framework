@@ -15,10 +15,10 @@ the environment- I like this one the best
 how mutation is handled-
 individuals dont share anything- no mutation off of the top performers
 not enough attempts- start messing with multi processing
-reset current value of all nodes to 0 after each forward pass
+fix add_link in genome so it can have a link be added with the input being from a hidden node
+maybe add a chance to remove hidden nodes
 """
 
 """time to start making graphs to see if things are actually learning"""
-"""somehow fitness is going up but no links are being added"""
 """Adjust how mutations happen and their rates"""
 """use the top fitness as the ones to mutate off of in new generations?"""

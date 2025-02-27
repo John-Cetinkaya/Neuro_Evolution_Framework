@@ -74,10 +74,11 @@ class Genome:
 
 
     def reset_NN_values(self):
+        """Sets all node values back to 0 after each forward pass"""
         for node_type in self.neurons:
             for node in self.neurons[node_type]:
                 self.neurons[node_type][node].current_value = 0
-        
+
     def forward_pass(self):
         """preforms a single pass over the Neural Network returns output nodes"""
         #maybe could set current values to 0 as you pass forward
@@ -89,15 +90,14 @@ class Genome:
             output_node = link.link_id.output_id
 
             for node_type in self.neurons:
-                #adds in bias to first node in link
+                #adds in bias to first node in link 
                 if input_node in self.neurons[node_type]:
                     first_node = self.neurons[node_type][input_node]
-                    if working_node != first_node:
+                    if working_node != first_node:#needed so bias isnt continuously added in if there are more than 1 edges for a node
                         working_node = first_node
                         working_node.current_value = working_node.activation_func.forward(working_node.current_value + working_node.bias)
 
                 if output_node in self.neurons[node_type]:#multiply the weight
-                    #maybe reset all nodes except inputs on each forward pass
                     second_node = self.neurons[node_type][output_node]
                     second_node.current_value = working_node.current_value * link.weight
 
@@ -138,7 +138,7 @@ class Genome:
             self.links.remove(link)
             self.links = self._top_sort()
         except:
-            pass
+            pass#pretty cheese fix
 
     def adjust_weight(self, upper= .5, lower= -.5):
         """adjusts a random link weight"""
@@ -194,6 +194,7 @@ class Genome:
         return sorted_links
 
     def mutate(self, add_node_chance = .05, add_link_chance = .2, adjust_weight_chance = .5, adjust_bias_chance = .05, do_nothing = .2):
+        """Mutates a network based on the weights passed in. Total of prams should equal 1 but doesnt need to"""
         options = ["add_node", "add_link", "adjust_weight", "adjust_bias", "do_nothing"]#maybe add remove node
         weights = [add_node_chance, add_link_chance, adjust_weight_chance, adjust_bias_chance, do_nothing]
         
@@ -244,10 +245,3 @@ if __name__ == "__main__":
     print("'Outputs'")
     for neuron in t_genome.neurons["output"]:
         print(t_genome.neurons["output"][neuron].current_value)
-
-"""
-TODO:
-    apply softmax to output nodes
-    No need to worry about crossover just concern yourself with having mutation before formal testing
-    allow added links to add from hidden nodes to other nodes
-"""

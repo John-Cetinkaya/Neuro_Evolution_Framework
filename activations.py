@@ -1,7 +1,8 @@
-import numpy as np
-import math
+"""File for storing various activation functions.
+They don't need to be classes but I started with that so I kept it like that"""
 
-"""File for storing various activation functions"""
+import math
+import numpy as np
 
 class Relu:
     """Creates a Relu activation object that can be passed into nodes"""
