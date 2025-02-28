@@ -38,10 +38,10 @@ def run(env, pop, generations_to_run):
     env.close()
     return pop.pop[0]#returns most fit individual
 
-def play_game(individual):
+def play_game(individual, game):
     """Only works for cart pole. displays the individual thats passed in attempting cartpole
     shows the neural network after the attempt"""
-    env = gym.make('CartPole-v1', render_mode = "human")
+    env = gym.make(game, render_mode = "human")
     individual.fitness = 0
     observation, info = env.reset()
     episode_over = False
