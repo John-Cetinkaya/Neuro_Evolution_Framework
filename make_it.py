@@ -1,6 +1,22 @@
 import gymnasium as gym
 import visualize
 
+
+def test_multi_run(args):
+
+    args[0].fitness = 0#resets individual's fitness each gen
+    observation, info = args[1].reset()#resets the environment for each individuals attempt
+    episode_over = False
+
+    while not episode_over:
+        action = args[0].gen_move(observation) #generates a action from observations
+        observation, reward, terminated, truncated, info = args[1].step(action)#takes a action
+        args[0].fitness += reward #increments reward. this is specific to cartpole env
+
+        episode_over = terminated or truncated
+
+
+
 def run(env, pop, generations_to_run):
     """runs a population for generations_to_run in a given environment
     returns the most fit individual, makes a file logging the generation and highest fitness"""

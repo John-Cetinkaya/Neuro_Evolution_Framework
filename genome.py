@@ -1,5 +1,7 @@
 """
 Main genome file for generating a genotype that can be used for generating a neural net
+A nice change would be to let neurons know what links are coming in and what are coming out
+but that change would make me have to re do everything so it stays for now
 """
 import random
 import activations
@@ -139,6 +141,29 @@ class Genome:
             self.links = self._top_sort()
         except:
             pass#pretty cheese fix
+    
+    def remove_node(self):
+        incoming_links = []
+        outgoing_links = []
+        try:
+            node = random.choice(self.neurons["hidden"])
+            for link in self.links:
+                if link.link_id.output_id == node.neuron_id:
+                    incoming_links.append(link)
+                if link.link_id.input_id == node.neuron_id:
+                    outgoing_links.append(link)
+
+            for i in range(len(incoming_links)):
+                new_link_id = LinkId(incoming_links[i].link_id.input_id, outgoing_links[i].link_id.output_id)
+                self.links.append(LinkGene(new_link_id, 1, True))
+
+            for i in range(len(incoming_links)):
+                self.links.remove(incoming_links[i])
+                self.links.remove(outgoing_links[i])
+            self.neurons["hidden"].remove(node)
+        except:
+            pass
+
 
     def adjust_weight(self, upper= .5, lower= -.5):
         """adjusts a random link weight"""
@@ -193,10 +218,10 @@ class Genome:
 
         return sorted_links
 
-    def mutate(self, add_node_chance = .05, add_link_chance = .2, adjust_weight_chance = .5, adjust_bias_chance = .05, do_nothing = .2):
+    def mutate(self, add_node_chance = .1, add_link_chance = .2, adjust_weight_chance = .43, adjust_bias_chance = .05, remove_node = .07, do_nothing = .15):
         """Mutates a network based on the weights passed in. Total of prams should equal 1 but doesnt need to"""
-        options = ["add_node", "add_link", "adjust_weight", "adjust_bias", "do_nothing"]#maybe add remove node
-        weights = [add_node_chance, add_link_chance, adjust_weight_chance, adjust_bias_chance, do_nothing]
+        options = ["add_node", "add_link", "adjust_weight", "adjust_bias","remove_node", "do_nothing"]#maybe add remove node
+        weights = [add_node_chance, add_link_chance, adjust_weight_chance, adjust_bias_chance, remove_node, do_nothing]
         
         choice = random.choices(options, weights, k=1)[0]
 
@@ -211,6 +236,9 @@ class Genome:
 
         if choice == "adjust_bias":
             self.adjust_bias()
+
+        if choice == "remove_node":
+            self.remove_node()
 
         if choice == "do_nothing":
             pass
