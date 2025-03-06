@@ -153,12 +153,12 @@ class Genome:
                 if link.link_id.input_id == node.neuron_id:
                     outgoing_links.append(link)
 
-            for i in range(len(incoming_links)):
-                new_link_id = LinkId(incoming_links[i].link_id.input_id, outgoing_links[i].link_id.output_id)
+            for i, link in enumerate(incoming_links):
+                new_link_id = LinkId(link.link_id.input_id, outgoing_links[i].link_id.output_id)
                 self.links.append(LinkGene(new_link_id, 1, True))
 
-            for i in range(len(incoming_links)):
-                self.links.remove(incoming_links[i])
+            for i, link in enumerate(incoming_links):
+                self.links.remove(link)
                 self.links.remove(outgoing_links[i])
             self.neurons["hidden"].remove(node)
         except:
@@ -218,7 +218,7 @@ class Genome:
 
         return sorted_links
 
-    def mutate(self, add_node_chance = .1, add_link_chance = .2, adjust_weight_chance = .43, adjust_bias_chance = .05, remove_node = .07, do_nothing = .15):
+    def mutate(self, add_node_chance = .05, add_link_chance = .25, adjust_weight_chance = .51, adjust_bias_chance = .05, remove_node = .04, do_nothing = .1):
         """Mutates a network based on the weights passed in. Total of prams should equal 1 but doesnt need to"""
         options = ["add_node", "add_link", "adjust_weight", "adjust_bias","remove_node", "do_nothing"]#maybe add remove node
         weights = [add_node_chance, add_link_chance, adjust_weight_chance, adjust_bias_chance, remove_node, do_nothing]
